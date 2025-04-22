@@ -1,7 +1,13 @@
+using Application.Services;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Context;
+using Persistance.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<ICarService, CarService>();
+
+builder.Services.AddAutoMapper(typeof(Persistance.AssemblyReference).Assembly);
 
 // appsettings.json dosyasýndaki connection stringi alýp DbContext'e ekliyorum.
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
