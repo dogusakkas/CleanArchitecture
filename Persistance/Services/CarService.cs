@@ -27,6 +27,9 @@ namespace Persistance.Services
 
             await _context.Set<Car>().AddAsync(car, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            throw new Exception("Manual test exception from CreateAsync");
+
         }
     }
 }

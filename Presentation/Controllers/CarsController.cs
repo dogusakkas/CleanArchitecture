@@ -18,5 +18,14 @@ namespace Presentation.Controllers
             MessageResponse response = await _mediator.Send(createCarCommand, cancellationToken);
             return Ok(response);
         }
+
+        [HttpGet]
+        public IActionResult gettest()
+        {
+            int x = 0;
+            int y = 0;
+            int sonuc = x / y;
+            return Ok();
+        }
     }
 }
