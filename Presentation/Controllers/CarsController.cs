@@ -1,5 +1,8 @@
 ﻿using Application.Features.CarFeatures.Commands.CreateCar;
+using Application.Features.CarFeatures.Queries.GetAllCar;
 using Domain.Dtos;
+using Domain.Entities;
+using EntityFrameworkCorePagination.Nuget.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Abstraction;
@@ -19,13 +22,11 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        public IActionResult gettest()
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetAll(GetAllCarQuery request, CancellationToken cancellationToken)
         {
-            int x = 0;
-            int y = 0;
-            int sonuc = x / y;
-            return Ok();
+            PaginationResult<Car> response = await _mediator.Send(request, cancellationToken);
+            return Ok(response);
         }
     }
 }

@@ -1,21 +1,42 @@
 using Application.Services;
 using CleanArchitecture.WebApi.Middleware;
+using Domain.Entities;
+using Domain.Repositories;
 using FluentValidation;
+using GenericRepository;
+using Infrastructure;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Context;
+using Persistance.Repositories;
 using Persistance.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IMailService, MailService>();
+
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+// GenericRepository kütüphanesini kullanarak UnitOfWork ve Repository patternini uyguluyorum.
+//builder.Services.AddScoped<IUnitOfWork, UnitOfWork<AppDbContext>>();
+builder.Services.AddScoped<IUnitOfWork>(cfr => cfr.GetRequiredService<AppDbContext>());
+builder.Services.AddScoped<ICarRepository, CarRepository>();
 
 builder.Services.AddAutoMapper(typeof(Persistance.AssemblyReference).Assembly);
 
 // appsettings.json dosyasýndaki connection stringi alýp DbContext'e ekliyorum.
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 1;
+    options.Password.RequireUppercase = false;
+}).AddEntityFrameworkStores<AppDbContext>();
 
 
 builder.Services.AddControllers()

@@ -1,17 +1,30 @@
 ﻿using Domain.Abstractions;
+using Domain.Entities;
+using GenericRepository;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistance.Context
 {
-    public sealed class AppDbContext : DbContext // sealed başka bir classın miras almasını engeller
+    public sealed class AppDbContext : IdentityDbContext<User, IdentityRole, string>, IUnitOfWork
     {
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemblyReference).Assembly);
+
+            modelBuilder.Ignore<IdentityUserLogin<string>>();
+            modelBuilder.Ignore<IdentityUserRole<string>>();
+            modelBuilder.Ignore<IdentityUserClaim<string>>();
+            modelBuilder.Ignore<IdentityUserToken<string>>();
+            modelBuilder.Ignore<IdentityRoleClaim<string>>();
+            modelBuilder.Ignore<IdentityRole<string>>();
+        }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

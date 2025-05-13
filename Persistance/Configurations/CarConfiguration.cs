@@ -10,6 +10,7 @@ namespace Persistance.Configurations
         {
             builder.ToTable("Cars");
             builder.HasKey(x => x.Id);
+            builder.HasIndex(x => x.Name);
         }
     }
 }
