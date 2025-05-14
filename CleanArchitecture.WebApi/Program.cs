@@ -1,5 +1,6 @@
 using Application.Services;
 using CleanArchitecture.WebApi.Middleware;
+using CleanArchitecture.WebApi.OptionsSetup;
 using Domain.Entities;
 using Domain.Repositories;
 using FluentValidation;
@@ -17,13 +18,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IUnitOfWork>(cfr => cfr.GetRequiredService<AppDbContext>());
+builder.Services.AddScoped<ICarRepository, CarRepository>();
 
 builder.Services.AddTransient<ExceptionMiddleware>();
 
-// GenericRepository kütüphanesini kullanarak UnitOfWork ve Repository patternini uyguluyorum.
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork<AppDbContext>>();
-builder.Services.AddScoped<IUnitOfWork>(cfr => cfr.GetRequiredService<AppDbContext>());
-builder.Services.AddScoped<ICarRepository, CarRepository>();
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
+builder.Services.AddAuthentication().AddJwtBearer();
+
 
 builder.Services.AddAutoMapper(typeof(Persistance.AssemblyReference).Assembly);
 
