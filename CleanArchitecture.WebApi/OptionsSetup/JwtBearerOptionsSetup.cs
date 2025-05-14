@@ -21,7 +21,7 @@ namespace CleanArchitecture.WebApi.OptionsSetup
             options.TokenValidationParameters.ValidIssuer = _jwtOptions.Issuer;
 
             options.TokenValidationParameters.ValidateAudience = true;
-            options.TokenValidationParameters.ValidIssuer = _jwtOptions.Audience;
+            options.TokenValidationParameters.ValidAudience = _jwtOptions.Audience;
 
             options.TokenValidationParameters.ValidateLifetime = true;
             options.TokenValidationParameters.ValidateIssuerSigningKey = true;
