@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Features.AuthFeatures.Commands.Login;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace Application.Abstractions
 {
     public interface IJwtProvider
     {
-        string CreateToken(User user);
+        Task<LoginCommandResponse> CreateTokenAsync(User user);
     }
 }
