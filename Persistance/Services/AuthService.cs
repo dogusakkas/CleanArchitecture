@@ -1,9 +1,12 @@
-﻿using Application.Features.AuthFeatures.Commands.Register;
+﻿using Application.Abstractions;
+using Application.Features.AuthFeatures.Commands.Login;
+using Application.Features.AuthFeatures.Commands.Register;
 using Application.Services;
 using AutoMapper;
 using Domain.Dtos;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +20,35 @@ namespace Persistance.Services
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IMailService _mailService;
+        private readonly IJwtProvider _jwtProvider;
 
-        public AuthService(UserManager<User> userManager, IMapper mapper, IMailService mailService)
+        public AuthService(UserManager<User> userManager, IMapper mapper, IMailService mailService, IJwtProvider jwtProvider)
         {
             _userManager = userManager;
             _mapper = mapper;
             _mailService = mailService;
+            _jwtProvider = jwtProvider;
+        }
+
+        public async Task<LoginCommandResponse> LoginAsync(LoginCommand request, CancellationToken cancellationToken)
+        {
+            User user = await _userManager.Users.Where(x => x.UserName == request.userNameorEmail || x.Email == request.userNameorEmail)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı");
+
+            var result = await _userManager.CheckPasswordAsync(user, request.password);
+
+            if (result)
+            {
+                LoginCommandResponse loginCommandResponse = await _jwtProvider.CreateTokenAsync(user);
+                return loginCommandResponse;
+            }
+            else
+            {
+                throw new Exception("Kullanıcı adı veya şifre hatalı");
+            }
         }
 
         public async Task RegisterAsync(RegisterCommand registerCommand)

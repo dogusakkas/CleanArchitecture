@@ -1,3 +1,4 @@
+using Application.Abstractions;
 using Application.Services;
 using CleanArchitecture.WebApi.Middleware;
 using CleanArchitecture.WebApi.OptionsSetup;
@@ -6,6 +7,7 @@ using Domain.Repositories;
 using FluentValidation;
 using GenericRepository;
 using Infrastructure;
+using Infrastructure.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IUnitOfWork>(cfr => cfr.GetRequiredService<AppDbContext>());
 builder.Services.AddScoped<ICarRepository, CarRepository>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 builder.Services.AddTransient<ExceptionMiddleware>();
 
