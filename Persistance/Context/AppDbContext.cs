@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistance.Context
 {
-    public sealed class AppDbContext : IdentityDbContext<User, IdentityRole, string>, IUnitOfWork
+    public sealed class AppDbContext : IdentityDbContext<User, Role, string>, IUnitOfWork
     {
 
         public AppDbContext(DbContextOptions options) : base(options)

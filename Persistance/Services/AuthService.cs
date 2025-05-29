@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions;
+using Application.Features.AuthFeatures.Commands.CreateNewTokenByRefreshToken;
 using Application.Features.AuthFeatures.Commands.Login;
 using Application.Features.AuthFeatures.Commands.Register;
 using Application.Services;
@@ -28,6 +29,22 @@ namespace Persistance.Services
             _mapper = mapper;
             _mailService = mailService;
             _jwtProvider = jwtProvider;
+        }
+
+        public async Task<LoginCommandResponse> CreateTokenByRefreshTokenAsync(CreateNewTokenByRefreshTokenCommand request, CancellationToken cancellationToken)
+        {
+            User user = await _userManager.FindByIdAsync(request.userId);
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı");
+
+            if (user.RefreshToken != request.RefreshToken)
+                throw new Exception("Refresh Token süresi geçerli değil");
+
+            if (user.RefreshTokenExpires < DateTime.Now)
+                throw new Exception("Refresh Token süresi dolmuş");
+
+            LoginCommandResponse response = await _jwtProvider.CreateTokenAsync(user);
+            return response;
         }
 
         public async Task<LoginCommandResponse> LoginAsync(LoginCommand request, CancellationToken cancellationToken)
